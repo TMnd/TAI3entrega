@@ -7,11 +7,16 @@ package grupori.tai3entrega;
 
 import java.io.*;
 import SevenZip.Compression.LZMA.*;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 
 public class main {
+
     private static int contadorFreqs = 0;
     private static int contadorCorrerArrayFiles = 0;
-    
+
     private static void freqsGenerator(String ficheiro) {
         String nomeFicheiro[] = ficheiro.split("\\.");
         try {
@@ -23,11 +28,11 @@ public class main {
             e.printStackTrace(System.err);
         }
     }
-    
-    private static void gerarFreqs(String PastaMusicaCaminho){
+
+    private static void gerarFreqs(String PastaMusicaCaminho) {
         File VerAPasta = new File(PastaMusicaCaminho);
         File[] listOfFiles = VerAPasta.listFiles();
-        
+
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (file.getName().endsWith(".wav")) {
@@ -72,11 +77,11 @@ public class main {
             e.printStackTrace();
         }
     }
-    
-    private static void juntarFicheiros(String PastaMusicaCaminho, String PathParaFichMerged) throws InterruptedException{
+
+    private static void juntarFicheiros(String PastaMusicaCaminho, String PathParaFichMerged) throws InterruptedException {
         File VerAPasta = new File(PastaMusicaCaminho);
         File[] listarFicheiros = VerAPasta.listFiles();
-        
+
         File[] files = new File[contadorFreqs];
 
         for (File file : listarFicheiros) {
@@ -97,7 +102,7 @@ public class main {
         BufferedInputStream inStream = new BufferedInputStream(new java.io.FileInputStream(inputToCompress));
         //Criar o ficheiro 7zip
         String nomeFicheiro[] = ficheiro.split("\\.");
-        File compressedOutput = new File(nomeFicheiro[0]+"_c.7z");
+        File compressedOutput = new File(nomeFicheiro[0] + "_c.7z");
         BufferedOutputStream outStream = new BufferedOutputStream(new java.io.FileOutputStream(compressedOutput));
         // Criar p objecto encoder do LZMA / Header Information */
         Encoder encoder = new Encoder();
@@ -115,16 +120,16 @@ public class main {
         }
         // Escrever dados compressados para ficheiro
         encoder.Code(inStream, outStream, -1, -1, null);
-      
+
         outStream.flush();
         outStream.close();
         inStream.close();
     }
-    
-    private static void criariFicheirosComp(String PastaMusicaCaminho) throws IOException{
+
+    private static void criariFicheirosComp(String PastaMusicaCaminho) throws IOException {
         File VerAPasta = new File(PastaMusicaCaminho);
         File[] listOfFiles = VerAPasta.listFiles();
-        
+
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (file.getName().endsWith(".freqs")) {
@@ -132,7 +137,43 @@ public class main {
                 }
             }
         }
-        
+    }
+
+    /*
+     * referir no relatório que foi baseado neste tópico: https://goo.gl/iJKpTb
+     */
+    public static void copyAudio(String sourceFileName, String destinationFileName, int startSecond, int secondsToCopy) {
+        AudioInputStream inputStream = null;
+        AudioInputStream shortenedStream = null;
+        try {
+            File file = new File(sourceFileName);
+            AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(file);
+            AudioFormat format = fileFormat.getFormat();
+            inputStream = AudioSystem.getAudioInputStream(file);
+            int bytesPerSecond = format.getFrameSize() * (int) format.getFrameRate();
+            inputStream.skip(startSecond * bytesPerSecond);
+            long framesOfAudioToCopy = secondsToCopy * (int) format.getFrameRate();
+            shortenedStream = new AudioInputStream(inputStream, format, framesOfAudioToCopy);
+            File destinationFile = new File(destinationFileName);
+            AudioSystem.write(shortenedStream, fileFormat.getType(), destinationFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (shortenedStream != null) {
+                try {
+                    shortenedStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -141,15 +182,17 @@ public class main {
         String PastaMusicaCaminho = "src\\main\\java\\grupori\\tai3entrega";//sc.next();
         String PathParaFichMerged = "src\\main\\java\\grupori\\tai3entrega\\merge.freqs"; //Caso queiram meter noutro sitio
 
+        //copyAudio("src\\main\\java\\grupori\\tai3entrega\\k.wav", "src\\main\\java\\grupori\\tai3entrega\\k-edited.wav", 0, 3);
+
         System.out.println("A correr o programa do prof");
         gerarFreqs(PastaMusicaCaminho);
-                
+
         System.out.println("Merge dos ficheiros .freqs");
         juntarFicheiros(PastaMusicaCaminho, PathParaFichMerged);
-                   
+
         System.out.println("A comprimir os ficheiros:");
         criariFicheirosComp(PastaMusicaCaminho);
-       
+
         System.out.println("Done");
     }
 }

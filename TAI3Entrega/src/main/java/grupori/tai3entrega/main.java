@@ -32,6 +32,20 @@ public class main {
             e.printStackTrace(System.err);
         }
     }
+    
+    private static void sox(File ficheiro, int start , int end) {
+        //String nomeFicheiro[] = ficheiro.split("\\.");
+         System.out.println(ficheiro);
+        try {
+            String CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ ficheiro +" ..//clientes//excerto.wav trim "+start+" "+end;
+            System.out.println(CMD);
+            // Correr o "script" do cmd
+            Process process = Runtime.getRuntime().exec(CMD);
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
 
     private static void gerarFreqs(String PastaMusicaCaminho) {
         File VerAPasta = new File(PastaMusicaCaminho);
@@ -84,9 +98,7 @@ public class main {
         }
     }
 
-    /**
-     *  LMZA 
-     */
+    // LMZA
     private static void comprimir(String ficheiro) throws FileNotFoundException, IOException {
         //Ler input para ser comprimido
         File inputToCompress = new File(ficheiro);
@@ -141,43 +153,6 @@ public class main {
         }        
     }
 
-     /*
-     * referir no relatório que foi baseado neste tópico: https://goo.gl/iJKpTb
-     */
-    public static void copyAudio(String sourceFileName, String destinationFileName, int startSecond, int secondsToCopy) {
-        AudioInputStream inputStream = null;
-        AudioInputStream shortenedStream = null;
-        try {
-            File file = new File(sourceFileName);
-            AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(file);
-            AudioFormat format = fileFormat.getFormat();
-            inputStream = AudioSystem.getAudioInputStream(file);
-            int bytesPerSecond = format.getFrameSize() * (int) format.getFrameRate();
-            inputStream.skip(startSecond * bytesPerSecond);
-            long framesOfAudioToCopy = secondsToCopy * (int) format.getFrameRate();
-            shortenedStream = new AudioInputStream(inputStream, format, framesOfAudioToCopy);
-            File destinationFile = new File(destinationFileName);
-            AudioSystem.write(shortenedStream, fileFormat.getType(), destinationFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if (shortenedStream != null) {
-                try {
-                    shortenedStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-    
     private static void merge(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
         File VerAPasta = new File(PastaMusicaCaminho);
         File[] listOfFiles = VerAPasta.listFiles();
@@ -230,8 +205,10 @@ public class main {
       
         //copyAudio("src\\main\\java\\grupori\\tai3entrega\\k.wav", "src\\main\\java\\grupori\\tai3entrega\\k-edited.wav", 0, 3);
         System.out.println("A cortar musica");
-        copyAudio(input,"src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.wav",musicaComeco,musicaSeleccao);
-
+        //copyAudio(input,"src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.wav",musicaComeco,musicaSeleccao);
+        File inputFile = new File(input);
+        sox(inputFile,musicaComeco,musicaSeleccao);
+        
         System.out.println("A correr o programa do prof");
         gerarFreqs(PastaMusicaCaminho);
         

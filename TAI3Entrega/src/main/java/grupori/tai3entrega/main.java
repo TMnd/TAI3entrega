@@ -7,7 +7,9 @@ package grupori.tai3entrega;
 
 import java.io.*;
 import SevenZip.Compression.LZMA.*;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -17,12 +19,12 @@ public class main {
 
     private static int contadorFreqs = 0;
     private static int contadorCorrerArrayFiles = 0;
+    Map<Integer, String> tm = new TreeMap<Integer,String>();
 
     private static void freqsGenerator(String ficheiro) {
         String nomeFicheiro[] = ficheiro.split("\\.");
         try {
             String CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//clientes && GetMaxFreqs.exe -w " + nomeFicheiro[0] + ".freqs " + nomeFicheiro[0] + ".wav";
-            System.out.println(CMD);
             // Correr o "script" do cmd
             Process process = Runtime.getRuntime().exec(CMD);
             process.waitFor();
@@ -33,7 +35,6 @@ public class main {
 
     private static void gerarFreqs(String PastaMusicaCaminho) {
         File VerAPasta = new File(PastaMusicaCaminho);
-        System.out.println("pasta: " + PastaMusicaCaminho);
         File[] listOfFiles = VerAPasta.listFiles();
 
         for (File file : listOfFiles) {
@@ -56,6 +57,8 @@ public class main {
             e1.printStackTrace();
         }
 
+     
+        
         for (File f : files) {
             FileInputStream fis;
             try {
@@ -81,31 +84,16 @@ public class main {
         }
     }
 
-    private static void juntarFicheiros(String PastaMusicaCaminho, String PathParaFichMerged) throws InterruptedException {
-        File VerAPasta = new File(PastaMusicaCaminho);
-        File[] listarFicheiros = VerAPasta.listFiles();
-
-        File[] files = new File[contadorFreqs];
-
-        for (File file : listarFicheiros) {
-            if (file.isFile()) {
-                if (file.getName().endsWith(".freqs")) {
-                    files[contadorCorrerArrayFiles] = new File(file.getAbsolutePath());
-                    contadorCorrerArrayFiles++;
-                }
-            }
-        }
-        File mergedFile = new File(PathParaFichMerged);
-        mergeFiles(files, mergedFile);
-    }
-
+    /**
+     *  LMZA 
+     */
     private static void comprimir(String ficheiro) throws FileNotFoundException, IOException {
         //Ler input para ser comprimido
         File inputToCompress = new File(ficheiro);
         BufferedInputStream inStream = new BufferedInputStream(new java.io.FileInputStream(inputToCompress));
         //Criar o ficheiro 7zip
         String nomeFicheiro[] = ficheiro.split("\\.");
-        File compressedOutput = new File(nomeFicheiro[0] + "_c.7z");
+        File compressedOutput = new File(nomeFicheiro[0] + ".7z");
         BufferedOutputStream outStream = new BufferedOutputStream(new java.io.FileOutputStream(compressedOutput));
         // Criar p objecto encoder do LZMA / Header Information */
         Encoder encoder = new Encoder();
@@ -130,19 +118,30 @@ public class main {
     }
 
     private static void criariFicheirosComp(String PastaMusicaCaminho) throws IOException {
-        File VerAPasta = new File(PastaMusicaCaminho);
-        File[] listOfFiles = VerAPasta.listFiles();
+        File VerAPastaMusica = new File(PastaMusicaCaminho);
+        File[] listOfFilesMusica = VerAPastaMusica.listFiles();
+        File VerAPastaMerge = new File("src\\main\\java\\grupori\\tai3entrega\\merges\\");
+        File[] listOfFilesMerge = VerAPastaMerge.listFiles();
 
-        for (File file : listOfFiles) {
+        for (File file : listOfFilesMusica) {
             if (file.isFile()) {
                 if (file.getName().endsWith(".freqs")) {
                     comprimir(file.getPath());
+                    file.delete();
                 }
             }
         }
+         for (File file : listOfFilesMerge) {
+            if (file.isFile()) {
+                if (file.getName().endsWith(".freqs")) {
+                    comprimir(file.getPath());
+                    file.delete();
+                }
+            }
+        }        
     }
 
-    /*
+     /*
      * referir no relatório que foi baseado neste tópico: https://goo.gl/iJKpTb
      */
     public static void copyAudio(String sourceFileName, String destinationFileName, int startSecond, int secondsToCopy) {
@@ -178,34 +177,74 @@ public class main {
             }
         }
     }
+    
+    private static void merge(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
+        File VerAPasta = new File(PastaMusicaCaminho);
+        File[] listOfFiles = VerAPasta.listFiles();
+        
+        File[] listaMerge = new File[2];
+        listaMerge[0] = new File(caminhoFichExcerto);
+
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                if (file.getName().endsWith(".freqs")) {
+                    listaMerge[1] = new File(file.getAbsolutePath());
+                    File mergedFile = new File(mergePath + "\\exerto_"+file.getName());
+                    mergeFiles(listaMerge, mergedFile);
+                }
+            }
+        }
+    }
+    
+    private static void ndc(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
+        File VerAPasta = new File(PastaMusicaCaminho);
+        File[] listOfFiles = VerAPasta.listFiles();
+        
+        File[] listaMerge = new File[2];
+        listaMerge[0] = new File(caminhoFichExcerto);
+
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                if (file.getName().endsWith(".freqs")) {
+                    listaMerge[1] = new File(file.getAbsolutePath());
+                    File mergedFile = new File(mergePath + "\\exerto_"+file.getName());
+                    mergeFiles(listaMerge, mergedFile);
+                    file.delete();
+                }
+            }
+        }
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner sc = new Scanner(System.in);
-        
-        //System.out.println("Insera o caminho para a musica desejada: ");
-        String input = "C:\\Users\\joaoa\\Desktop\\Tai\\TAI3entrega\\TAI3Entrega\\src\\main\\java\\grupori\\tai3entrega\\clinetes\\Catarina - Deixa o vento passar.wav";//c.nextLine();
-        //System.out.println("Insira o começo:");
-        //int musicaComeco = sc.nextInt();
-        //System.out.println("Insira o limite:");
-        //int musicaSeleccao = sc.nextInt();
-        
+
+        System.out.println("Insera o caminho para a musica desejada: ");
+        String input = "C:\\Users\\joaoa\\Desktop\\Tai\\TAI3entrega\\TAI3Entrega\\src\\main\\java\\grupori\\tai3entrega\\clientes\\Catarina-Deixaoventopassar.wav";//c.nextLine();
+        System.out.println("Insira o começo:");
+        int musicaComeco = sc.nextInt();
+        System.out.println("Insira o limite:");
+        int musicaSeleccao = sc.nextInt();
+
         //System.out.println("Insira o caminho da pasta:");
         String PastaMusicaCaminho = "src\\main\\java\\grupori\\tai3entrega\\clientes";//sc.next();
-        String PathParaFichMerged = "src\\main\\java\\grupori\\tai3entrega\\merge.freqs"; //Caso queiram meter noutro sitio
-
+      
         //copyAudio("src\\main\\java\\grupori\\tai3entrega\\k.wav", "src\\main\\java\\grupori\\tai3entrega\\k-edited.wav", 0, 3);
         System.out.println("A cortar musica");
-       // copyAudio(input,"src\\main\\java\\grupori\\tai3entrega\\k-edited.wav",musicaComeco,musicaSeleccao);
-        
+        copyAudio(input,"src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.wav",musicaComeco,musicaSeleccao);
+
         System.out.println("A correr o programa do prof");
         gerarFreqs(PastaMusicaCaminho);
+        
+        System.out.println("Merge");
+        merge("src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.wav",PastaMusicaCaminho,"src\\main\\java\\grupori\\tai3entrega\\merges");
 
-       // System.out.println("Merge dos ficheiros .freqs");
-       // juntarFicheiros(PastaMusicaCaminho, PathParaFichMerged);
-
-       // System.out.println("A comprimir os ficheiros:");
-       // criariFicheirosComp(PastaMusicaCaminho);
-
+        System.out.println("A comprimir os ficheiros:");
+        criariFicheirosComp(PastaMusicaCaminho);
+        
+        System.out.println("A calcular ndc");
+        
+        //devolver resultado menor + musica
+        
         System.out.println("Done");
     }
 }

@@ -15,7 +15,7 @@ public class main {
 
     private static int contadorFreqs = 0;
     private static int contadorCorrerArrayFiles = 0;
-    private static Map<Long, String> tm = new TreeMap<>();
+    private static Map<Double, String> tm = new TreeMap<>();
 
     private static void freqsGenerator(String ficheiro) {
         String nomeFicheiro[] = ficheiro.split("\\.");
@@ -169,6 +169,7 @@ public class main {
 
     private static void ndc(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
         File excerto = new File(caminhoFichExcerto);
+        System.out.println("excerto: " + caminhoFichExcerto + ":" + excerto.length());
 
         File VerAPasta = new File(PastaMusicaCaminho);
         File[] listOfFiles = VerAPasta.listFiles();
@@ -179,10 +180,11 @@ public class main {
         for (File mfile : listOfMergeFiles) {
             if (mfile.isFile()) {
                 for (File file : listOfFiles) {
-                    if (file.isFile() && file.getName().endsWith(".7z") && mfile.getName().contains(file.getName())) {
-                        double calculo = (9 - 1) / 9;
-                        System.out.println(calculo);
-                        //tm.put(calculo, file.getName() + ".wav");
+                    if (file.isFile() && file.getName().endsWith(".7z") && mfile.getName().equals("excerto_" + file.getName()) && !file.getName().contains("excerto")) {
+                        //System.out.println(file.getName() + ":" + mfile.getName());
+                        //System.out.println(mfile.length() + ":" + file.length() + ":" + excerto.length());
+                        double calculo = ((double) mfile.length() - Math.min((double) file.length(), (double) excerto.length())) / Math.max((double) file.length(), (double) excerto.length());
+                        tm.put(calculo, file.getName());
                     }
                 }
 
@@ -190,8 +192,8 @@ public class main {
         }
 
         /* teste */
-        for (Map.Entry<Long, String> entrySet : tm.entrySet()) {
-            Long key = entrySet.getKey();
+        for (Map.Entry<Double, String> entrySet : tm.entrySet()) {
+            Double key = entrySet.getKey();
             String value = entrySet.getValue();
 
             System.out.println(key + " :: " + value);

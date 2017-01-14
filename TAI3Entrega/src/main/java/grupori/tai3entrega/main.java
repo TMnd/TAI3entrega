@@ -10,12 +10,14 @@ import SevenZip.Compression.LZMA.*;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.zip.GZIPOutputStream;
 
 public class main {
 
     private static int contadorFreqs = 0;
     private static int contadorCorrerArrayFiles = 0;
     private static Map<Double, String> tm = new TreeMap<>();
+    static Scanner sc = new Scanner(System.in);
 
     private static void freqsGenerator(String ficheiro) {
         String nomeFicheiro[] = ficheiro.split("\\.");
@@ -29,12 +31,35 @@ public class main {
         }
     }
 
-    private static void sox(File ficheiro, int start, int end) {
-        //String nomeFicheiro[] = ficheiro.split("\\.");
-        System.out.println(ficheiro);
+    private static void sox(File ficheiro, int option) {
+        String CMD = null;
         try {
-            String CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe " + ficheiro + " ..//clientes//excerto.wav trim " + start + " " + end;
-            System.out.println(CMD);
+            switch (option) {
+                case 1:
+                    System.out.println("Adicionar whitenoise"); //adcionar uma opção para aumentar o "grayu"?
+                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ficheiro.getAbsoluteFile()+" -p synth brownnoise vol 0.02 | sox.exe -m "+ficheiro.getAbsoluteFile()+" - ..//clientes//excerto.wav";
+                    System.out.println(CMD);
+                    break;
+                case 2:
+                    System.out.println("Adicionar brownnoise"); //adcionar uma opção para aumentar o "grayu"?
+                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ficheiro.getAbsoluteFile()+" -p synth brownnoise vol 0.02 | sox.exe -m "+ficheiro.getAbsoluteFile()+" - ..//clientes//excerto.wav";
+                    System.out.println(CMD);
+                    break;
+                case 3:
+                    System.out.println("Adicionar pinknoise"); //adcionar uma opção para aumentar o "grayu"?
+                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ficheiro.getAbsoluteFile()+" -p synth pinknoise vol 0.02 | sox.exe -m "+ficheiro.getAbsoluteFile()+" - ..//clientes//excerto.wav";
+                    System.out.println(CMD);
+                    break;
+                case 4:
+                    System.out.println("Insira o começo:");
+                    int musicaComeco = sc.nextInt();
+                    System.out.println("Insira o limite:");
+                    int musicaSeleccao = sc.nextInt();
+                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ficheiro.getAbsoluteFile()+" ..//clientes//excerto.wav trim " + musicaComeco+ " " + musicaSeleccao;
+                    break;
+                default:
+                    break;
+            }
             // Correr o "script" do cmd
             Process process = Runtime.getRuntime().exec(CMD);
             process.waitFor();
@@ -51,7 +76,6 @@ public class main {
             if (file.isFile()) {
                 if (file.getName().endsWith(".wav")) {
                     freqsGenerator(file.getName());
-                    contadorFreqs++;
                 }
             }
         }
@@ -125,6 +149,27 @@ public class main {
         inStream.close();
     }
 
+    //GZIP
+    private static void compressGzipFile(String ficheiro) {
+        String nomeFicheiro[] = ficheiro.split("\\.");
+        try {
+            FileInputStream fis = new FileInputStream(ficheiro);
+            FileOutputStream fos = new FileOutputStream(nomeFicheiro[0] + ".gz");
+            GZIPOutputStream gzipOS = new GZIPOutputStream(fos);
+            byte[] buffer = new byte[1024];
+            int len;
+            while((len=fis.read(buffer)) != -1){
+                gzipOS.write(buffer, 0, len);
+            }
+            //close resources
+            gzipOS.close();
+            fos.close();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     private static void criariFicheirosComp(String PastaMusicaCaminho) throws IOException {
         File VerAPastaMusica = new File(PastaMusicaCaminho);
         File[] listOfFilesMusica = VerAPastaMusica.listFiles();
@@ -135,6 +180,7 @@ public class main {
             if (file.isFile()) {
                 if (file.getName().endsWith(".freqs")) {
                     comprimir(file.getPath());
+                    compressGzipFile(file.getPath());
                     file.delete();
                 }
             }
@@ -143,6 +189,7 @@ public class main {
             if (file.isFile()) {
                 if (file.getName().endsWith(".freqs")) {
                     comprimir(file.getPath());
+                    compressGzipFile(file.getPath());
                     file.delete();
                 }
             }
@@ -201,23 +248,32 @@ public class main {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        Scanner sc = new Scanner(System.in);
-
         System.out.println("Insera o caminho para a musica desejada: ");
-        String input = "C:\\Users\\Mariana\\Desktop\\TAI\\TAI3entrega\\TAI3Entrega\\src\\main\\java\\grupori\\tai3entrega\\clientes\\Catarina-Deixaoventopassar.wav";//c.nextLine();
-        System.out.println("Insira o começo:");
-        int musicaComeco = sc.nextInt();
-        System.out.println("Insira o limite:");
-        int musicaSeleccao = sc.nextInt();
-
+        String input = "src\\main\\java\\grupori\\tai3entrega\\clientes\\Catarina-Motivação.wav";//c.nextLine();
+        
         //System.out.println("Insira o caminho da pasta:");
         String PastaMusicaCaminho = "src\\main\\java\\grupori\\tai3entrega\\clientes";//sc.next();
 
         //copyAudio("src\\main\\java\\grupori\\tai3entrega\\k.wav", "src\\main\\java\\grupori\\tai3entrega\\k-edited.wav", 0, 3);
-        System.out.println("A cortar musica");
-        File inputFile = new File(input);
-        sox(inputFile, musicaComeco, musicaSeleccao);
+        
+        System.out.println("Escolha a opção:");
+        System.out.println("1 - Adcionar whitenoise");
+        System.out.println("2 - Adcionar Brownnoise");
+        System.out.println("3 - Adcionar Pinknoise");
+        System.out.println("4 - Selecionar intervalo de tempo");
 
+        while (true){ 
+            System.out.println("--");
+            String option = sc.next();
+            if(option.equals("1") || option.equals("2") || option.equals("3") || option.equals("4")){
+                System.out.println("aplicar o sox");
+                File inputFile = new File(input);
+                sox(inputFile, Integer.parseInt(option));
+                break;
+            }
+            System.out.println("Erro, escolha outro!");
+        }
+        
         System.out.println("A correr o programa do prof");
         gerarFreqs(PastaMusicaCaminho);
 

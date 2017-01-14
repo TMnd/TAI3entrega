@@ -5,7 +5,6 @@
  */
 package grupori.tai3entrega;
 
-import static grupori.tai3entrega.main.sc;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,13 +12,17 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 
 /**
  *
  * @author joaoa
  */
-public class Part1 {
-    private static void freqsGenerator(String ficheiro) {
+public class generator {
+
+    private Scanner sc = new Scanner(System.in);
+
+    public void freqsGenerator(String ficheiro) {
         String nomeFicheiro[] = ficheiro.split("\\.");
         try {
             String CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//clientes && GetMaxFreqs.exe -w " + nomeFicheiro[0] + ".freqs " + nomeFicheiro[0] + ".wav";
@@ -30,8 +33,8 @@ public class Part1 {
             e.printStackTrace(System.err);
         }
     }
-    
-    private static void gerarFreqs(String PastaMusicaCaminho) {
+
+    public void gerarFreqs(String PastaMusicaCaminho) {
         File VerAPasta = new File(PastaMusicaCaminho);
         File[] listOfFiles = VerAPasta.listFiles();
 
@@ -43,32 +46,32 @@ public class Part1 {
             }
         }
     }
-    
-    private static void sox(File ficheiro, int option) {
+
+    public void sox(File ficheiro, int option) {
         String CMD = null;
         try {
             switch (option) {
                 case 1:
                     System.out.println("Adicionar whitenoise"); //adcionar uma opção para aumentar o "grayu"?
-                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ficheiro.getAbsoluteFile()+" -p synth brownnoise vol 0.02 | sox.exe -m "+ficheiro.getAbsoluteFile()+" - ..//clientes//excerto.wav";
+                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe " + ficheiro.getAbsoluteFile() + " -p synth brownnoise vol 0.02 | sox.exe -m " + ficheiro.getAbsoluteFile() + " - ..//clientes//excerto.wav";
                     System.out.println(CMD);
                     break;
                 case 2:
                     System.out.println("Adicionar brownnoise"); //adcionar uma opção para aumentar o "grayu"?
-                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ficheiro.getAbsoluteFile()+" -p synth brownnoise vol 0.02 | sox.exe -m "+ficheiro.getAbsoluteFile()+" - ..//clientes//excerto.wav";
+                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe " + ficheiro.getAbsoluteFile() + " -p synth brownnoise vol 0.02 | sox.exe -m " + ficheiro.getAbsoluteFile() + " - ..//clientes//excerto.wav";
                     System.out.println(CMD);
                     break;
                 case 3:
                     System.out.println("Adicionar pinknoise"); //adcionar uma opção para aumentar o "grayu"?
-                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ficheiro.getAbsoluteFile()+" -p synth pinknoise vol 0.02 | sox.exe -m "+ficheiro.getAbsoluteFile()+" - ..//clientes//excerto.wav";
+                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe " + ficheiro.getAbsoluteFile() + " -p synth pinknoise vol 0.02 | sox.exe -m " + ficheiro.getAbsoluteFile() + " - ..//clientes//excerto.wav";
                     System.out.println(CMD);
                     break;
                 case 4:
-                    System.out.println("Insira o começo:");
+                    System.out.print("Insira o começo: ");
                     int musicaComeco = sc.nextInt();
-                    System.out.println("Insira o limite:");
+                    System.out.print("Insira o limite: ");
                     int musicaSeleccao = sc.nextInt();
-                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe "+ficheiro.getAbsoluteFile()+" ..//clientes//excerto.wav trim " + musicaComeco+ " " + musicaSeleccao;
+                    CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe " + ficheiro.getAbsoluteFile() + " ..//clientes//excerto.wav trim " + musicaComeco + " " + musicaSeleccao;
                     break;
                 default:
                     break;
@@ -80,8 +83,8 @@ public class Part1 {
             e.printStackTrace(System.err);
         }
     }
-    
-    private static void mergeFiles(File[] files, File mergedFile) {
+
+    public void mergeFiles(File[] files, File mergedFile) {
         FileWriter fstream = null;
         BufferedWriter out = null;
         try {
@@ -117,8 +120,8 @@ public class Part1 {
             e.printStackTrace();
         }
     }
-    
-    private static void merge(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
+
+    public void merge(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
         File VerAPasta = new File(PastaMusicaCaminho);
         File[] listOfFiles = VerAPasta.listFiles();
 
@@ -135,39 +138,4 @@ public class Part1 {
             }
         }
     }
-    
-    public static void main(String[] args) throws IOException {
-        System.out.println("Insera o caminho para a musica desejada: ");
-        String input = "src\\main\\java\\grupori\\tai3entrega\\clientes\\Catarina-Motivação.wav";//c.nextLine();
-        
-        //System.out.println("Insira o caminho da pasta:");
-        String PastaMusicaCaminho = "src\\main\\java\\grupori\\tai3entrega\\clientes";//sc.next();
-
-        //copyAudio("src\\main\\java\\grupori\\tai3entrega\\k.wav", "src\\main\\java\\grupori\\tai3entrega\\k-edited.wav", 0, 3);
-        
-        System.out.println("Escolha a opção:");
-        System.out.println("1 - Adcionar whitenoise");
-        System.out.println("2 - Adcionar Brownnoise");
-        System.out.println("3 - Adcionar Pinknoise");
-        System.out.println("4 - Selecionar intervalo de tempo");
-
-        while (true){ 
-            String option = sc.next();
-            if(option.equals("1") || option.equals("2") || option.equals("3") || option.equals("4")){
-                System.out.println("aplicar o sox");
-                File inputFile = new File(input);
-                sox(inputFile, Integer.parseInt(option));
-                break;
-            }
-            System.out.println("Erro, escolha outro!");
-        }
-        
-        System.out.println("A correr o programa do prof");
-        gerarFreqs(PastaMusicaCaminho);
-
-        System.out.println("Merge");
-        merge("src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.freqs", PastaMusicaCaminho, "src\\main\\java\\grupori\\tai3entrega\\merges");
-
-        System.out.println("Done");
-    }  
 }

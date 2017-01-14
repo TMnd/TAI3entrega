@@ -94,8 +94,9 @@ public class generator {
             e1.printStackTrace();
         }
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = null;
         for (File f : files) {
+            sb = new StringBuilder();
             FileInputStream fis;
             try {
                 fis = new FileInputStream(f);

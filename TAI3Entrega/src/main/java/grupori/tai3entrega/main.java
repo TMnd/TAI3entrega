@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package grupori.tai3entrega;
 
 import java.io.*;
@@ -20,7 +15,7 @@ public class main {
         String input = "src\\main\\java\\grupori\\tai3entrega\\clientes\\Catarina-Motivação.wav";//c.nextLine();
 
         //System.out.println("Insira o caminho da pasta:");
-        String PastaMusicaCaminho = "src\\main\\java\\grupori\\tai3entrega\\clientes";//sc.next();
+        String PastaMusicaCaminho = "src\\main\\java\\grupori\\tai3entrega\\clientes\\";//sc.next();
 
         generator t = new generator();
         compressor c = new compressor();
@@ -50,7 +45,7 @@ public class main {
         t.gerarFreqs(PastaMusicaCaminho);
 
         System.out.println("Merge");
-        t.merge("src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.freqs", PastaMusicaCaminho, "src\\main\\java\\grupori\\tai3entrega\\merges");
+        t.merge("src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.freqs", "src\\main\\java\\grupori\\tai3entrega\\clientes\\", "src\\main\\java\\grupori\\tai3entrega\\merges");
 
         System.out.println("A comprimir os ficheiros:");
         c.criarFicheirosComp(PastaMusicaCaminho);

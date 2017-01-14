@@ -1,23 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package grupori.tai3entrega;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
-/**
- *
- * @author joaoa
- */
+
 public class generator {
 
     private Scanner sc = new Scanner(System.in);
@@ -124,17 +117,43 @@ public class generator {
 
     public void merge(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
         File VerAPasta = new File(PastaMusicaCaminho);
-        File[] listOfFiles = VerAPasta.listFiles();
+        
+        System.out.println(caminhoFichExcerto);
+        System.out.println(PastaMusicaCaminho);
+        System.out.println(mergePath);
 
-        File[] listaMerge = new File[2];
-        listaMerge[0] = new File(caminhoFichExcerto);
+        File[] listOfFiles = VerAPasta.listFiles();
+        
+        File file_extrato = new File(caminhoFichExcerto);
+        byte[] bytesArray_extrato = new byte[(int) file_extrato.length()];
+        FileInputStream fis_extrato = new FileInputStream(file_extrato);
+        fis_extrato.read(bytesArray_extrato); //read file into bytes[]
+        fis_extrato.close();
+        
+        /*File[] listaMerge = new File[2];
+        listaMerge[0] = new File(caminhoFichExcerto);*/
 
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (file.getName().endsWith(".freqs")) {
-                    listaMerge[1] = new File(file.getAbsolutePath());
+                    byte[] bytesArray_musica = new byte[(int) file.length()];
+                    byte[] bytesArray_output = new byte[bytesArray_extrato.length+bytesArray_musica.length];
+                    
+                    FileInputStream fis_musica = new FileInputStream(file);
+                    fis_musica.read(bytesArray_musica); //read file into bytes[]
+                    fis_musica.close();
+
+                    for (int i = 0; i < bytesArray_output.length; ++i){
+                        bytesArray_output[i] = i < bytesArray_extrato.length ? bytesArray_extrato[i] : bytesArray_musica[i - bytesArray_extrato.length];
+                    }
+                    
+                    FileOutputStream fos = new FileOutputStream(mergePath + "\\excerto_" + file.getName());
+                    fos.write(bytesArray_output);
+                    fos.close();
+                    
+                    /*listaMerge[1] = new File(file.getAbsolutePath());
                     File mergedFile = new File(mergePath + "\\excerto_" + file.getName());
-                    mergeFiles(listaMerge, mergedFile);
+                    mergeFiles(listaMerge, mergedFile);*/
                 }
             }
         }

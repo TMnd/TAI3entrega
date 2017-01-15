@@ -12,7 +12,7 @@ public class main {
     public static void main(String[] args) throws IOException, InterruptedException {
         clean();
         System.out.println("Insera o caminho para a musica desejada: ");
-        String input = "src\\main\\java\\grupori\\tai3entrega\\clientes\\Catarina-Motivação.wav";//c.nextLine();
+        String input = sc.nextLine();
 
         //System.out.println("Insira o caminho da pasta:");
         String PastaMusicaCaminho = "src\\main\\java\\grupori\\tai3entrega\\clientes\\";//sc.next();
@@ -21,6 +21,24 @@ public class main {
         compressor c = new compressor();
         calculator p = new calculator();
         String option = null;
+        String compressor = null;
+        
+        System.out.println("Escolha o compressor:");
+        System.out.println("1 - LZMA");
+        System.out.println("2 - BZip2");
+        
+        while (true) {
+            System.out.println("--");
+            option = sc.next();
+            if (option.equals("1")) {
+                compressor = ".7z";
+                break;
+            }else if(option.equals("2")){
+                compressor = ".bz2";
+                break;
+            }
+            System.out.println("Erro, escolha outro!");
+        }
 
         //copyAudio("src\\main\\java\\grupori\\tai3entrega\\k.wav", "src\\main\\java\\grupori\\tai3entrega\\k-edited.wav", 0, 3);
         System.out.println("Escolha a opção:");
@@ -51,7 +69,7 @@ public class main {
         c.criarFicheirosComp(PastaMusicaCaminho);
 
         System.out.println("A calcular ndc");
-        p.ndc("src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.7z", PastaMusicaCaminho, "src\\main\\java\\grupori\\tai3entrega\\merges");
+        p.ndc("src\\main\\java\\grupori\\tai3entrega\\clientes\\excerto.7z", PastaMusicaCaminho, "src\\main\\java\\grupori\\tai3entrega\\merges",compressor);
 
         //devolver resultado menor + musica
         System.out.println("Done");

@@ -32,9 +32,8 @@ public class compressor {
             if (file.isFile()) {
                 if (file.getName().endsWith(".freqs")) {
                     comprimir(file.getPath());
-                    compressGzipFile(file.getPath());
+                    //compressGzipFile(file.getPath());
                     compressBZip2File(file.getPath());
-                    //file.delete();
                 }
             }
         }
@@ -42,9 +41,8 @@ public class compressor {
             if (file.isFile()) {
                 if (file.getName().endsWith(".freqs")) {
                     comprimir(file.getPath());
-                    compressGzipFile(file.getPath());
+                    //compressGzipFile(file.getPath());
                     compressBZip2File(file.getPath());
-                    //file.delete();
                 }
             }
         }
@@ -82,7 +80,7 @@ public class compressor {
     }
 
     //GZIP
-    public void compressGzipFile(String ficheiro) {
+    /*public void compressGzipFile(String ficheiro) {
         String nomeFicheiro[] = ficheiro.split("\\.");
         try {
             FileInputStream fis = new FileInputStream(ficheiro);
@@ -100,7 +98,7 @@ public class compressor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     // BZIP
     public void compressBZip2File(String ficheiro) throws IOException {

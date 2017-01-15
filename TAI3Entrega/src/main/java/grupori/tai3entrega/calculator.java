@@ -9,7 +9,7 @@ public class calculator {
 
     private Map<Double, String> tm = new TreeMap<>();
 
-    public void ndc(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
+    public void ndc(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath, String compressor) throws IOException {
         File excerto = new File(caminhoFichExcerto);
         System.out.println("excerto: " + caminhoFichExcerto + ":" + excerto.length() * 8);
 
@@ -24,7 +24,7 @@ public class calculator {
             //System.out.println("lista do merge: " + mfile.getName());
             if (mfile.isFile()) {
                 for (File file : listOfFiles) {
-                    if (file.isFile() && file.getName().endsWith(".7z") && mfile.getName().equals("excerto_" + file.getName()) && !file.getName().contains("excerto")) {
+                    if (file.isFile() && file.getName().endsWith(compressor) && mfile.getName().equals("excerto_" + file.getName()) && !file.getName().contains("excerto")) {
                         //System.out.println("lista ficheiros: " + file.getName());
                         //System.out.println("Tamanho combinação (" + mfile.getName() + "): " + mfile.length() * 8);
                         //System.out.println("Tamanho excerto (" + excerto.getName() + "): " + excerto.length() * 8);
@@ -37,7 +37,6 @@ public class calculator {
             }
         }
 
-        /* teste */
         for (Map.Entry<Double, String> entrySet : tm.entrySet()) {
             Double key = entrySet.getKey();
             String value = entrySet.getValue();

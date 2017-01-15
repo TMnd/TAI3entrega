@@ -47,17 +47,14 @@ public class generator {
                 case 1:
                     System.out.println("Adicionar whitenoise"); //adcionar uma opção para aumentar o "grayu"?
                     CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe " + ficheiro.getAbsoluteFile() + " -p synth brownnoise vol 0.02 | sox.exe -m " + ficheiro.getAbsoluteFile() + " - ..//clientes//excerto.wav";
-                    System.out.println(CMD);
                     break;
                 case 2:
                     System.out.println("Adicionar brownnoise"); //adcionar uma opção para aumentar o "grayu"?
                     CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe " + ficheiro.getAbsoluteFile() + " -p synth brownnoise vol 0.02 | sox.exe -m " + ficheiro.getAbsoluteFile() + " - ..//clientes//excerto.wav";
-                    System.out.println(CMD);
                     break;
                 case 3:
                     System.out.println("Adicionar pinknoise"); //adcionar uma opção para aumentar o "grayu"?
                     CMD = "cmd.exe /c cd src//main//java//grupori//tai3entrega//sox && sox.exe " + ficheiro.getAbsoluteFile() + " -p synth pinknoise vol 0.02 | sox.exe -m " + ficheiro.getAbsoluteFile() + " - ..//clientes//excerto.wav";
-                    System.out.println(CMD);
                     break;
                 case 4:
                     System.out.print("Insira o começo: ");
@@ -117,21 +114,14 @@ public class generator {
 
     public void merge(String caminhoFichExcerto, String PastaMusicaCaminho, String mergePath) throws IOException {
         File VerAPasta = new File(PastaMusicaCaminho);
-        
-        System.out.println(caminhoFichExcerto);
-        System.out.println(PastaMusicaCaminho);
-        System.out.println(mergePath);
 
         File[] listOfFiles = VerAPasta.listFiles();
         
         File file_extrato = new File(caminhoFichExcerto);
         byte[] bytesArray_extrato = new byte[(int) file_extrato.length()];
         FileInputStream fis_extrato = new FileInputStream(file_extrato);
-        fis_extrato.read(bytesArray_extrato); //read file into bytes[]
+        fis_extrato.read(bytesArray_extrato);
         fis_extrato.close();
-        
-        /*File[] listaMerge = new File[2];
-        listaMerge[0] = new File(caminhoFichExcerto);*/
 
         for (File file : listOfFiles) {
             if (file.isFile()) {
@@ -140,7 +130,7 @@ public class generator {
                     byte[] bytesArray_output = new byte[bytesArray_extrato.length+bytesArray_musica.length];
                     
                     FileInputStream fis_musica = new FileInputStream(file);
-                    fis_musica.read(bytesArray_musica); //read file into bytes[]
+                    fis_musica.read(bytesArray_musica);
                     fis_musica.close();
 
                     for (int i = 0; i < bytesArray_output.length; ++i){
@@ -150,10 +140,7 @@ public class generator {
                     FileOutputStream fos = new FileOutputStream(mergePath + "\\excerto_" + file.getName());
                     fos.write(bytesArray_output);
                     fos.close();
-                    
-                    /*listaMerge[1] = new File(file.getAbsolutePath());
-                    File mergedFile = new File(mergePath + "\\excerto_" + file.getName());
-                    mergeFiles(listaMerge, mergedFile);*/
+
                 }
             }
         }
